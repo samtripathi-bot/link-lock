@@ -29,7 +29,7 @@
 
     <p>This application is entirely programmed in JavaScript. This was done intentionally, so that all encryption and decryption happens client-side. This means the code runs as a distributed application, relying only on GitHub Pages for infrastructure. It also means that no data about locked links is ever stored on a server. The code is designed to be auditable so users can investigate what is happening behind the scenes.</p>
 
-    <p>If you still want to run the application, I encourage you to clone the <a href="https://github.com/jstrieb/link-lock">source code on GitHub</a>. That way you can disable JavaScript only for trusted files on your local machine.</p>
+    <p>After the timer ends, you can see the password box. If you still want to run the application, I encourage you to clone the <a href="https://github.com/jstrieb/link-lock">source code on GitHub</a>. That way you can disable JavaScript only for trusted files on your local machine.</p>
   </div>
   </noscript>
 
@@ -41,6 +41,12 @@
 
     <label for="password">password</label>
     <input type="password" id="password" autofocus />
+    <!-- add this wrapper (keep the existing form markup inside it) -->
+<div id="unlock-form" style="display:none;">
+  <!-- YOUR EXISTING PASSWORD FORM STARTS HERE -->
+  ... (existing unlock/password form HTML) ...
+  <!-- YOUR EXISTING PASSWORD FORM ENDS HERE -->
+</div>
     <button id="unlockbutton">Unlock link</button>
   </div>
 
@@ -52,6 +58,30 @@
     <a href="https://jstrieb.github.io/link-lock/decrypt/" id="no-redirect" target="_blank"><button>Decrypt without redirect</button></a>
     <a href="https://jstrieb.github.io/link-lock/hidden/" id="hidden" target="_blank"><button>Create hidden bookmark</button></a>
   </div>
+  <script>
+/* ---- SET THIS: put your unlock time in IST (India Standard Time) ---- */
+const targetDateIST = '2025-10-01 18:00:00'; // format: 'YYYY-MM-DD HH:MM:SS' (change this)
+
+/* parse IST string to UTC milliseconds (so timezone is handled) */
+function parseISTtoUTCms(istString) {
+  const [d, t='00:00:00'] = istString.trim().split(' ');
+  const [yyyy, mm, dd] = d.split('-').map(Number);
+  const [hh, min, sec] = (t.split(':').map(x => Number(x)));
+  const istDate = new Date(Date.UTC(yyyy, mm-1, dd, hh, min || 0, sec || 0));
+  return istDate.getTime() - (5.5 * 60 * 60 * 1000); // IST -> UTC
+}
+
+const targetUTCms = parseISTtoUTCms(targetDateIST);
+
+/* create and insert countdown element above the form */
+let countdownEl = document.getElementById('countdown');
+if (!countdownEl) {
+  countdownEl = document.createElement('div');
+  countdownEl.id = 'countdown';
+  countdownEl.style.fontSize = '18px';
+  countdownEl.style.margin = '18px auto';
+  countdownEl.style.textAlign = 'center';
+  // insert
 </body>
 
 </html>
